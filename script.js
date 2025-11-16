@@ -22,7 +22,7 @@
 /* ================== CONFIG ================== */
 
 // Google Form formResponse endpoint (replace FORM_ID)
-const FORM_ACTION = "https://docs.google.com/forms/d/e/FORM_ID/formResponse"; // <-- replace
+const FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSc4vLnXpXPiYdsmpHcOoOTBi8GT71NhetKegIcaYAKEQyZrEQ/viewform"; // <-- replace
 
 // Google Form entry keys (replace each with real entry.x from your form)
 const ENTRY_NAME = "entry.NAME_ENTRY_KEY";         // student's full name
@@ -33,7 +33,7 @@ const ENTRY_EXAM = "entry.EXAM_ENTRY_KEY";        // optional: exam id/name
 const ENTRY_TIME = "entry.TIME_ENTRY_KEY";        // optional: time taken (seconds)
 
 // Published CSV (Responses sheet -> File -> Publish to web -> CSV)
-const PUBLISHED_SHEET_CSV_URL = ""; // optional
+const PUBLISHED_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1wTqy2GJOMOB1b-TpcCpBeOQ7xlDjMPAptQcevhCOER0/edit?usp=sharing"; // optional
 
 /* ================== Exams list ================== */
 const EXAMS = [
