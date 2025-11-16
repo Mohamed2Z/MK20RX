@@ -2,7 +2,7 @@
    GOOGLE_APPS_SCRIPT_URL has been set to the Apps Script Web App URL you provided.
 */
 
-const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKOax9G2jHPWeYpV3HdR6G0bg_5nOzLtl6vUQ-kycvUcbruATIpcKvyijs6IISALVh/exec";
+const GOOGLE_APPS_SCRIPT_URL = "https://docs.google.com/spreadsheets/d/17oJb1gP1kXg9YmYBwsTHApfmI8ZcUvpCyYunUVSCQ7o/edit?usp=sharing";
 
 /* List of exams available on the site.
    Each entry links to the corresponding JSON file present in repo root.
