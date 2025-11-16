@@ -360,13 +360,17 @@ function runExam(examJson, totalTime) {
 /* ================== Google Form submit helper ================== */
 /* Creates a hidden form and posts to FORM_ACTION inside a hidden iframe */
 function submitToGoogleForm(result) {
+  console.log("Attempting to submit to Google Form...", result);
+  
   // Validate config
   if (!FORM_ACTION || FORM_ACTION.includes("FORM_ID")) {
     console.warn("FORM_ACTION not configured. Skipping Google Form submission.");
+    alert("Google Form is not configured. Results will only be saved locally.");
     return;
   }
-  if (!ENTRY_NAME || !ENTRY_UNIVERSITY || !ENTRY_EMAIL || !ENTRY_SCORE) {
-    console.warn("One or more ENTRY_* keys not configured. Skipping Google Form submission.");
+  if (!ENTRY_NAME || ENTRY_NAME.includes("XXXXXXXXX")) {
+    console.warn("Entry IDs not configured. Skipping Google Form submission.");
+    alert("Google Form entry IDs are not configured. Results will only be saved locally.");
     return;
   }
 
@@ -390,21 +394,42 @@ function submitToGoogleForm(result) {
     inp.name = name;
     inp.value = value ?? "";
     form.appendChild(inp);
+    console.log(`Added input: ${name} = ${value}`);
   }
 
-  // Required fields (as requested)
+  // Required fields
   addInput(ENTRY_NAME, result.name || "");
   addInput(ENTRY_UNIVERSITY, result.university || "");
   addInput(ENTRY_EMAIL, result.email || "");
   addInput(ENTRY_SCORE, String(result.score ?? ""));
 
-  // Optional extras if configured in form
-  if (ENTRY_EXAM) addInput(ENTRY_EXAM, result.examId || "");
-  if (ENTRY_TIME) addInput(ENTRY_TIME, String(result.time ?? ""));
+  // Optional extras
+  if (ENTRY_EXAM && !ENTRY_EXAM.includes("XXXXXXXXX")) {
+    addInput(ENTRY_EXAM, result.examId || "");
+  }
+  if (ENTRY_TIME && !ENTRY_TIME.includes("XXXXXXXXX")) {
+    addInput(ENTRY_TIME, String(result.time ?? ""));
+  }
 
   document.body.appendChild(form);
-  try { form.submit(); } catch (err) { console.warn("Form submit error:", err); }
-  setTimeout(() => { try { form.remove(); } catch (e) {} }, 1200);
+  console.log("Submitting form to:", FORM_ACTION);
+  
+  try { 
+    form.submit();
+    console.log("Form submitted successfully!");
+  } catch (err) { 
+    console.error("Form submit error:", err);
+    alert("There was an error submitting to Google Form. Results are saved locally.");
+  }
+  
+  setTimeout(() => { 
+    try { 
+      form.remove(); 
+      console.log("Form element cleaned up");
+    } catch (e) {
+      console.warn("Error cleaning up form:", e);
+    } 
+  }, 1200);
 }
 
 /* ================== Result page ================== */
