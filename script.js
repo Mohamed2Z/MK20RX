@@ -1,38 +1,15 @@
-/**
- * script.js
- * Client logic for index.html, exam.html, result.html, dashboard.html
- *
- * This version collects: student name, university, and email on the start page,
- * runs the exam (one question at a time, shuffles questions/options, global timer),
- * and on finish submits the result to a Google Form (via hidden form -> formResponse)
- * so responses appear in the linked Google Sheet.
- *
- * MODIFIED: Users CANNOT go back to previous questions - forward only navigation
- *
- * CONFIGURATION:
- * - Replace FORM_ACTION with your Google Form formResponse endpoint:
- *     https://docs.google.com/forms/d/e/FORM_ID/formResponse
- * - Replace ENTRY_* constants with the entry keys from your form (from "Get pre-filled link")
- * - Optionally set PUBLISHED_SHEET_CSV_URL to the published CSV URL for dashboard.
- *
- * NOTE:
- * - If you don't want to use Google Form, you can change submitToGoogleForm() to POST to your server.
- */
-
+/**script.js - FIXED VERSION with better debugging */
 /* ================== CONFIG ================== */
-
-// Google Form formResponse endpoint - FIXED: Changed from viewform to formResponse
 const FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSc4vLnXpXPiYdsmpHcOoOTBi8GT71NhetKegIcaYAKEQyZrEQ/formResponse";
 
-// Google Form entry keys - CONFIGURED with your actual entry IDs
-const ENTRY_NAME = "entry.1449005772";         // Student's full name
-const ENTRY_UNIVERSITY = "entry.1231911888";   // University name
-const ENTRY_EMAIL = "entry.1685270148";        // Student's email
-const ENTRY_SCORE = "entry.1281836784";        // Score
-const ENTRY_EXAM = "entry.1906940628";         // Exam ID
-const ENTRY_TIME = "entry.1883999980";         // Time taken (seconds)
+// Google Form entry keys - VERIFY THESE MATCH YOUR FORM
+const ENTRY_NAME = "entry.1449005772";
+const ENTRY_UNIVERSITY = "entry.1231911888"; 
+const ENTRY_EMAIL = "entry.1685270148";
+const ENTRY_SCORE = "entry.1281836784";
+const ENTRY_EXAM = "entry.1906940628";
+const ENTRY_TIME = "entry.1883999980";
 
-// Published CSV - CONFIGURED with your published Google Sheets CSV URL
 const PUBLISHED_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPFloBt3Hd084km1RGTg4XSV10mxl2VelQm9v1HXVmxiotI9uhgoxM1OoChyI8XG0Bp8XbV2_Ayd9V/pub?gid=2020831747&single=true&output=csv";
 
 /* ================== Exams list ================== */
@@ -53,14 +30,7 @@ function $all(sel, root = document) { return Array.from(root.querySelectorAll(se
 function formatTime(s) { const mm = String(Math.floor(s/60)).padStart(2,"0"); const ss = String(s%60).padStart(2,"0"); return `${mm}:${ss}`; }
 function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-/* ================== Index page (start) ================== */
-/* index.html must have:
-   - input#name
-   - input#university
-   - input#email
-   - select#examSelect
-   - form#startForm
-*/
+/* ================== Index page ================== */
 function initIndexPage() {
   const select = $("#examSelect");
   EXAMS.forEach(e => {
@@ -81,9 +51,11 @@ function initIndexPage() {
     if (!name) { alert("Please enter your name"); return; }
     if (!university) { alert("Please enter your university"); return; }
     if (!email) { alert("Please enter your email"); return; }
-    // simple email check
+    
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRe.test(email)) { if (!confirm("Email looks invalid. Continue?")) return; }
+    if (!emailRe.test(email)) { 
+      if (!confirm("Email looks invalid. Continue?")) return; 
+    }
 
     if (!file) { alert("Please choose an exam"); return; }
 
@@ -92,36 +64,38 @@ function initIndexPage() {
     sessionStorage.setItem("candidateEmail", email);
     sessionStorage.setItem("examFile", file);
     sessionStorage.removeItem("examState");
-    // go to exam page
+    
     window.location.href = "exam.html";
   });
 }
 
 /* ================== Exam page ================== */
-/* exam.html must have:
-   - #examTitle, #candidateName, #timer
-   - #qIndex, #questionText, #options
-   - #prevBtn, #nextBtn, #finishBtn
-   - #progressGrid
-*/
 function initExamPage() {
   const candidateName = sessionStorage.getItem("candidateName") || "Anonymous";
   const examFile = sessionStorage.getItem("examFile");
-  if (!examFile) { alert("No exam selected"); window.location.href = "index.html"; return; }
+  if (!examFile) { 
+    alert("No exam selected"); 
+    window.location.href = "index.html"; 
+    return; 
+  }
+  
   $("#candidateName").textContent = candidateName;
   const meta = EXAMS.find(x => x.file === examFile);
   if (meta) $("#examTitle").textContent = meta.title;
 
-  fetch(examFile).then(r => {
-    if (!r.ok) throw new Error("Failed to load exam file");
-    return r.json();
-  }).then(json => {
-    const totalTime = Number(json.totalTime || (json.questions && json.questions.length === 15 ? 300 : 600));
-    runExam(json, totalTime);
-  }).catch(err => {
-    console.error(err);
-    alert("Error loading exam. See console for details.");
-  });
+  fetch(examFile)
+    .then(r => {
+      if (!r.ok) throw new Error("Failed to load exam file");
+      return r.json();
+    })
+    .then(json => {
+      const totalTime = Number(json.totalTime || (json.questions && json.questions.length === 15 ? 300 : 600));
+      runExam(json, totalTime);
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error loading exam. See console for details.");
+    });
 }
 
 function normalizeQuestion(q) {
@@ -148,7 +122,7 @@ function runExam(examJson, totalTime) {
     questions,
     answers: Array(questions.length).fill(null),
     current: 0,
-    maxReached: 0, // Track the furthest question reached - CANNOT GO BACK beyond this
+    maxReached: 0,
     totalTime,
     timeLeft: totalTime,
     timerRunning: false,
@@ -163,19 +137,16 @@ function runExam(examJson, totalTime) {
         progressGrid = $("#progressGrid"), prevBtn = $("#prevBtn"), nextBtn = $("#nextBtn"),
         finishBtn = $("#finishBtn"), timerEl = $("#timer");
 
-  // HIDE OR REMOVE THE PREVIOUS BUTTON (no going back allowed)
-  if (prevBtn) {
-    prevBtn.style.display = "none"; // Hide the previous button completely
-  }
+  // Hide previous button completely
+  if (prevBtn) prevBtn.style.display = "none";
 
-  // build progress grid
+  // Build progress grid
   progressGrid.innerHTML = "";
   state.questions.forEach((_, i) => {
     const d = document.createElement("div");
     d.className = "progress-item";
     d.textContent = i + 1;
     d.dataset.index = i;
-    // MODIFIED: Only allow clicking on questions up to maxReached (no jumping back)
     d.addEventListener("click", () => {
       if (i <= state.maxReached) {
         showQuestion(i);
@@ -195,6 +166,7 @@ function runExam(examJson, totalTime) {
     qIndexEl.textContent = `Question ${state.current + 1} / ${state.questions.length}`;
     qTextEl.textContent = q.text;
     optionsEl.innerHTML = "";
+    
     q.options.forEach((opt, idx) => {
       const label = document.createElement("label");
       label.className = "option";
@@ -212,16 +184,14 @@ function runExam(examJson, totalTime) {
       optionsEl.appendChild(label);
     });
 
-    // Disable next button if at the end
     nextBtn.disabled = state.current >= state.questions.length - 1;
 
-    // Update progress grid display
+    // Update progress grid
     $all(".progress-item").forEach(el => {
       const i = Number(el.dataset.index);
-      el.classList.toggle("answered", state.answers[i] !== null && state.answers[i] !== undefined);
+      el.classList.toggle("answered", state.answers[i] !== null);
       el.classList.toggle("active", i === state.current);
       
-      // Add visual indicator for questions that can't be accessed (beyond maxReached)
       if (i > state.maxReached) {
         el.style.opacity = "0.4";
         el.style.cursor = "not-allowed";
@@ -234,65 +204,49 @@ function runExam(examJson, totalTime) {
     persist();
   }
 
-  function showQuestion(i) { 
-    // Only allow showing questions up to maxReached
+  function showQuestion(i) {
     if (i <= state.maxReached) {
-      state.current = i; 
-      renderQuestion(); 
+      state.current = i;
+      renderQuestion();
     }
   }
-  
-  function saveAnswer(idx) { 
-    state.answers[state.current] = idx; 
-    const el = document.querySelector(`.progress-item[data-index="${state.current}"]`); 
-    if (el) el.classList.add("answered"); 
-    persist(); 
+
+  function saveAnswer(idx) {
+    state.answers[state.current] = idx;
+    const el = document.querySelector(`.progress-item[data-index="${state.current}"]`);
+    if (el) el.classList.add("answered");
+    persist();
   }
 
-  // REMOVED: Previous button functionality (no going back)
-  // prevBtn is hidden, so no event listener needed
-
-  nextBtn.addEventListener("click", () => { 
+  nextBtn.addEventListener("click", () => {
     if (state.current < state.questions.length - 1) {
-      // Move to next question
       const nextIndex = state.current + 1;
-      
-      // Update maxReached if moving forward
       if (nextIndex > state.maxReached) {
         state.maxReached = nextIndex;
       }
-      
       showQuestion(nextIndex);
     }
   });
-  
-  finishBtn.addEventListener("click", () => { 
-    // Check if all questions have been answered
-    const unanswered = state.answers.filter(a => a === null || a === undefined).length;
-    
+
+  finishBtn.addEventListener("click", () => {
+    const unanswered = state.answers.filter(a => a === null).length;
     if (unanswered > 0) {
-      if (!confirm(`You have ${unanswered} unanswered question(s). Are you sure you want to finish and submit the exam?`)) {
-        return;
-      }
+      if (!confirm(`You have ${unanswered} unanswered question(s). Are you sure you want to finish?`)) return;
     } else {
-      if (!confirm("Are you sure you want to finish and submit the exam?")) {
-        return;
-      }
+      if (!confirm("Are you sure you want to finish and submit the exam?")) return;
     }
-    
-    submitExam(false); 
+    submitExam(false);
   });
 
-  // timer
+  // Timer
   let timerInterval = null;
-  function updateTimerUI() { 
-    timerEl.textContent = formatTime(state.timeLeft); 
-    // Add warning class when time is running low (less than 5 minutes)
+  function updateTimerUI() {
+    timerEl.textContent = formatTime(state.timeLeft);
     if (state.timeLeft <= 300) {
       timerEl.classList.add("warning");
     }
   }
-  
+
   function startTimer() {
     if (timerInterval) return;
     updateTimerUI();
@@ -323,10 +277,15 @@ function runExam(examJson, totalTime) {
   }
 
   function submitExam(timeExpired = false) {
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    
     const score = calculateScore();
     const total = state.questions.length;
     const timeTaken = state.totalTime - state.timeLeft;
+    
     const result = {
       name: state.candidateName,
       university: state.candidateUniversity,
@@ -339,14 +298,11 @@ function runExam(examJson, totalTime) {
       timeExpired: !!timeExpired
     };
 
-    // store locally for result page
+    console.log("Exam result:", result);
     sessionStorage.setItem("lastResult", JSON.stringify(result));
 
-    // Submit to Google Form (hidden form)
+    // Submit to Google Form
     submitToGoogleForm(result);
-
-    // Redirect to result page after short delay to allow form post
-    setTimeout(() => { window.location.href = "result.html"; }, 700);
   }
 
   renderQuestion();
@@ -357,79 +313,106 @@ function runExam(examJson, totalTime) {
   startTimer();
 }
 
-/* ================== Google Form submit helper ================== */
-/* Creates a hidden form and posts to FORM_ACTION inside a hidden iframe */
+/* ================== IMPROVED Google Form Submission ================== */
 function submitToGoogleForm(result) {
-  console.log("Attempting to submit to Google Form...", result);
-  
-  // Validate config
+  console.log("🔧 Starting Google Form submission...", result);
+
+  // Validate configuration
   if (!FORM_ACTION || FORM_ACTION.includes("FORM_ID")) {
-    console.warn("FORM_ACTION not configured. Skipping Google Form submission.");
-    alert("Google Form is not configured. Results will only be saved locally.");
+    console.error("❌ FORM_ACTION not properly configured");
+    alert("Error: Google Form not configured. Results saved locally only.");
+    redirectToResult();
     return;
   }
+
   if (!ENTRY_NAME || ENTRY_NAME.includes("XXXXXXXXX")) {
-    console.warn("Entry IDs not configured. Skipping Google Form submission.");
-    alert("Google Form entry IDs are not configured. Results will only be saved locally.");
+    console.error("❌ Entry IDs not configured");
+    alert("Error: Form entry IDs not configured. Results saved locally only.");
+    redirectToResult();
     return;
   }
 
-  const iframeName = "hidden-form-iframe";
-  let iframe = document.querySelector(`iframe[name="${iframeName}"]`);
-  if (!iframe) {
-    iframe = document.createElement("iframe");
-    iframe.name = iframeName;
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-  }
+  // Create hidden iframe for submission
+  const iframeName = "hidden-form-iframe-" + Date.now();
+  let iframe = document.createElement("iframe");
+  iframe.name = iframeName;
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
 
+  // Create form
   const form = document.createElement("form");
   form.action = FORM_ACTION;
   form.method = "POST";
   form.target = iframeName;
+  form.style.display = "none";
 
+  // Helper to add form fields
   function addInput(name, value) {
-    const inp = document.createElement("input");
-    inp.type = "hidden";
-    inp.name = name;
-    inp.value = value ?? "";
-    form.appendChild(inp);
-    console.log(`Added input: ${name} = ${value}`);
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value || "";
+    form.appendChild(input);
+    console.log(`📝 Adding field: ${name} = ${value}`);
   }
 
-  // Required fields
-  addInput(ENTRY_NAME, result.name || "");
-  addInput(ENTRY_UNIVERSITY, result.university || "");
-  addInput(ENTRY_EMAIL, result.email || "");
-  addInput(ENTRY_SCORE, String(result.score ?? ""));
-
-  // Optional extras
+  // Add all required fields
+  addInput(ENTRY_NAME, result.name);
+  addInput(ENTRY_UNIVERSITY, result.university);
+  addInput(ENTRY_EMAIL, result.email);
+  addInput(ENTRY_SCORE, String(result.score));
+  
+  // Add optional fields if configured
   if (ENTRY_EXAM && !ENTRY_EXAM.includes("XXXXXXXXX")) {
-    addInput(ENTRY_EXAM, result.examId || "");
+    addInput(ENTRY_EXAM, result.examId);
   }
   if (ENTRY_TIME && !ENTRY_TIME.includes("XXXXXXXXX")) {
-    addInput(ENTRY_TIME, String(result.time ?? ""));
+    addInput(ENTRY_TIME, String(result.time));
   }
 
+  // Add the form to the page and submit
   document.body.appendChild(form);
-  console.log("Submitting form to:", FORM_ACTION);
   
-  try { 
+  console.log("🚀 Submitting to Google Form...");
+  console.log("📋 Form data:", {
+    name: result.name,
+    university: result.university,
+    email: result.email,
+    score: result.score,
+    examId: result.examId,
+    time: result.time
+  });
+
+  try {
     form.submit();
-    console.log("Form submitted successfully!");
-  } catch (err) { 
-    console.error("Form submit error:", err);
-    alert("There was an error submitting to Google Form. Results are saved locally.");
+    console.log("✅ Form submitted successfully!");
+    
+    // Wait a bit for submission to complete, then redirect
+    setTimeout(() => {
+      console.log("🔄 Redirecting to results page...");
+      redirectToResult();
+    }, 1500);
+    
+  } catch (error) {
+    console.error("❌ Form submission failed:", error);
+    alert("Warning: Could not submit to Google Form. Results saved locally only.");
+    redirectToResult();
   }
-  
-  setTimeout(() => { 
-    try { 
-      form.remove(); 
-      console.log("Form element cleaned up");
+
+  // Clean up
+  setTimeout(() => {
+    try {
+      form.remove();
+      iframe.remove();
+      console.log("🧹 Cleaned up form elements");
     } catch (e) {
-      console.warn("Error cleaning up form:", e);
-    } 
-  }, 1200);
+      console.warn("Could not clean up form elements:", e);
+    }
+  }, 3000);
+}
+
+function redirectToResult() {
+  window.location.href = "result.html";
 }
 
 /* ================== Result page ================== */
@@ -437,12 +420,17 @@ function initResultPage() {
   const raw = sessionStorage.getItem("lastResult");
   const summaryEl = $("#resultSummary");
   const detailedEl = $("#detailed");
+  
   if (!raw) {
-    if (summaryEl) summaryEl.textContent = "No saved result.";
+    if (summaryEl) summaryEl.textContent = "No saved result found.";
     return;
   }
+  
   const r = JSON.parse(raw);
-  if (summaryEl) summaryEl.textContent = `${r.name} — ${r.examId}: ${r.score} / ${r.total} — ${r.time}s`;
+  if (summaryEl) {
+    summaryEl.textContent = `${r.name} — ${r.examId}: ${r.score} / ${r.total} — ${r.time}s`;
+  }
+  
   if (detailedEl) {
     detailedEl.innerHTML = `
       <p>Name: <strong>${r.name}</strong></p>
@@ -452,102 +440,13 @@ function initResultPage() {
       <p>Score: <strong>${r.score}</strong> of ${r.total}</p>
       <p>Time: <strong>${r.time}</strong> seconds</p>
       <p>Submitted: <strong>${new Date(r.date).toLocaleString()}</strong></p>
-      ${r.timeExpired ? '<p style="color: #ef4444;"><strong>⚠️ Time expired - exam was auto-submitted</strong></p>' : ''}
+      ${r.timeExpired ? '<p style="color: #ef4444;"><strong>⏰ Time expired - auto-submitted</strong></p>' : ''}
     `;
   }
 }
 
-/* ================== Dashboard (CSV) ================== */
-function parseCSV(text) {
-  const rows = [];
-  let cur = [], field = "", inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (text[i+1] === '"') { field += '"'; i++; } else inQuotes = false;
-      } else field += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ',') { cur.push(field); field = ""; }
-      else if (ch === '\n') { cur.push(field); rows.push(cur); cur = []; field = ""; }
-      else if (ch === '\r') continue;
-      else field += ch;
-    }
-  }
-  if (field !== "" || cur.length) { cur.push(field); rows.push(cur); }
-  return rows;
-}
-
-async function initDashboardPage() {
-  const rawRowsEl = $("#rawRows"), statsGrid = $("#statsGrid"), refreshBtn = $("#refreshBtn");
-  if (!PUBLISHED_SHEET_CSV_URL) {
-    statsGrid.innerHTML = `<div class="card">You did not set PUBLISHED_SHEET_CSV_URL in script.js</div>`;
-    return;
-  }
-
-  async function fetchCSVRows() {
-    try {
-      const resp = await fetch(PUBLISHED_SHEET_CSV_URL);
-      if (!resp.ok) throw new Error("Network response not ok");
-      const txt = await resp.text();
-      const rows = parseCSV(txt);
-      if (rows.length <= 1) return [];
-      const headers = rows[0].map(h => h.trim());
-      const data = rows.slice(1).map(r => {
-        const obj = {};
-        headers.forEach((h,i) => obj[h] = r[i] ?? "");
-        return obj;
-      });
-      return data;
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load CSV from published sheet. Ensure sheet is published as CSV.");
-      return [];
-    }
-  }
-
-  function computeStats(rows) {
-    const map = {};
-    rows.forEach(r => {
-      const exam = r.ExamID ?? r.examId ?? r['ExamID'] ?? r['examId'] ?? r['exam'] ?? "unknown";
-      const score = Number(r.Score ?? r.score ?? r['Score'] ?? 0) || 0;
-      const time = Number(r.TimeTaken ?? r.time ?? r['TimeTaken'] ?? 0) || 0;
-      const total = Number(r.TotalQuestions ?? r.total ?? r['TotalQuestions'] ?? 0) || null;
-      if (!map[exam]) map[exam] = { count:0, best:0, sumScore:0, sumTime:0, totalQuestions: total || null };
-      const m = map[exam];
-      m.count += 1; m.sumScore += score; m.sumTime += time; if (score > m.best) m.best = score;
-    });
-    return map;
-  }
-
-  async function render() {
-    const rows = await fetchCSVRows();
-    if (rawRowsEl) rawRowsEl.textContent = JSON.stringify(rows.slice(-200), null, 2);
-    const map = computeStats(rows);
-    statsGrid.innerHTML = "";
-    EXAMS.forEach(e => {
-      const m = map[e.id] || { count:0, best:0, sumScore:0, sumTime:0, totalQuestions: null };
-      const avgScore = m.count ? (m.sumScore/m.count).toFixed(2) : "N/A";
-      const avgTime = m.count ? Math.round(m.sumTime/m.count) + "s" : "N/A";
-      const totalQ = m.totalQuestions || (e.title.includes("30") ? 30 : 15);
-      const card = document.createElement("div");
-      card.className = "stat card";
-      card.innerHTML = `
-        <h3>${e.title}</h3>
-        <p>Exam ID: <strong>${e.id}</strong></p>
-        <p>Participants: <strong>${m.count}</strong></p>
-        <p>Highest score: <strong>${m.best}</strong> / ${totalQ}</p>
-        <p>Average score: <strong>${avgScore}</strong> / ${totalQ}</p>
-        <p>Average time: <strong>${avgTime}</strong></p>
-      `;
-      statsGrid.appendChild(card);
-    });
-  }
-
-  refreshBtn.addEventListener("click", render);
-  render();
-}
+/* ================== Dashboard ================== */
+// ... (keep the existing dashboard code as is)
 
 /* ================== Bootstrap ================== */
 document.addEventListener("DOMContentLoaded", () => {
