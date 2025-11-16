@@ -24,31 +24,16 @@
 // Google Form formResponse endpoint - FIXED: Changed from viewform to formResponse
 const FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSc4vLnXpXPiYdsmpHcOoOTBi8GT71NhetKegIcaYAKEQyZrEQ/formResponse";
 
-// Google Form entry keys - YOU MUST REPLACE THESE WITH YOUR ACTUAL ENTRY IDs
-// To get these:
-// 1. Open your form in edit mode
-// 2. Click on "Get pre-filled link" (three dots menu)
-// 3. Fill in sample data
-// 4. Click "Get link"
-// 5. Copy the link and look for "entry.XXXXXXX" values
-// Example: entry.123456789 for Name field
-const ENTRY_NAME = "entry.XXXXXXXXX";         // student's full name - REPLACE WITH YOUR ENTRY ID
-const ENTRY_UNIVERSITY = "entry.XXXXXXXXX";   // university name - REPLACE WITH YOUR ENTRY ID
-const ENTRY_EMAIL = "entry.XXXXXXXXX";        // student's email - REPLACE WITH YOUR ENTRY ID
-const ENTRY_SCORE = "entry.XXXXXXXXX";        // score - REPLACE WITH YOUR ENTRY ID
-const ENTRY_EXAM = "entry.XXXXXXXXX";         // optional: exam id/name - REPLACE WITH YOUR ENTRY ID
-const ENTRY_TIME = "entry.XXXXXXXXX";         // optional: time taken (seconds) - REPLACE WITH YOUR ENTRY ID
+// Google Form entry keys - CONFIGURED with your actual entry IDs
+const ENTRY_NAME = "entry.1449005772";         // Student's full name
+const ENTRY_UNIVERSITY = "entry.1231911888";   // University name
+const ENTRY_EMAIL = "entry.1685270148";        // Student's email
+const ENTRY_SCORE = "entry.1281836784";        // Score
+const ENTRY_EXAM = "entry.1906940628";         // Exam ID
+const ENTRY_TIME = "entry.1883999980";         // Time taken (seconds)
 
-// Published CSV - WRONG URL FORMAT
-// Current URL is the edit/sharing URL, not the published CSV
-// To get the correct URL:
-// 1. Open your Google Sheet
-// 2. Go to File → Share → Publish to web
-// 3. Select "Entire Document" or specific sheet
-// 4. Choose "Comma-separated values (.csv)" from dropdown
-// 5. Click Publish and copy the URL
-// It should look like: https://docs.google.com/spreadsheets/d/e/SHEET_ID/pub?output=csv
-const PUBLISHED_SHEET_CSV_URL = ""; // REPLACE WITH PUBLISHED CSV URL
+// Published CSV - CONFIGURED with your published Google Sheets CSV URL
+const PUBLISHED_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPFloBt3Hd084km1RGTg4XSV10mxl2VelQm9v1HXVmxiotI9uhgoxM1OoChyI8XG0Bp8XbV2_Ayd9V/pub?gid=2020831747&single=true&output=csv";
 
 /* ================== Exams list ================== */
 const EXAMS = [
