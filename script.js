@@ -155,8 +155,7 @@ function runExam(examJson, totalTime) {
     candidateName: sessionStorage.getItem("candidateName") || "Anonymous",
     candidateUniversity: sessionStorage.getItem("candidateUniversity") || "",
     candidateEmail: sessionStorage.getItem("candidateEmail") || "",
-    examFile: sessionStorage.getItem("examFile"),
-    maxReached: 0  // Track the highest question index reached
+    examFile: sessionStorage.getItem("examFile")
   };
 
   const qIndexEl = $("#qIndex"), qTextEl = $("#questionText"), optionsEl = $("#options"),
@@ -175,14 +174,8 @@ function runExam(examJson, totalTime) {
     d.className = "progress-item";
     d.textContent = i + 1;
     d.dataset.index = i;
-    // MODIFIED: Only allow clicking on questions that have been reached or current
-    d.addEventListener("click", () => {
-      if (i <= state.maxReached) {
-        showQuestion(i);
-      } else {
-        alert("You can only view questions you have already reached. Please answer the current question to proceed.");
-      }
-    });
+    // MODIFIED: Disable clicking on progress grid items completely - forward only navigation
+    d.style.cursor = "default";
     progressGrid.appendChild(d);
   });
 
@@ -226,13 +219,17 @@ function runExam(examJson, totalTime) {
       el.classList.toggle("answered", state.answers[i] !== null && state.answers[i] !== undefined);
       el.classList.toggle("current", i === state.current);
       
-      // MODIFIED: Add visual indication for unreachable questions
-      if (i > state.maxReached) {
+      // MODIFIED: Mark all previous questions as locked/disabled
+      if (i < state.current) {
+        el.style.opacity = "0.5";
+        el.style.cursor = "not-allowed";
+        el.classList.add("locked");
+      } else if (i === state.current) {
+        el.style.opacity = "1";
+        el.style.cursor = "default";
+      } else {
         el.style.opacity = "0.4";
         el.style.cursor = "not-allowed";
-      } else {
-        el.style.opacity = "1";
-        el.style.cursor = "pointer";
       }
     });
 
@@ -240,9 +237,13 @@ function runExam(examJson, totalTime) {
   }
 
   function showQuestion(i) { 
-    // MODIFIED: Only allow forward navigation or viewing already visited questions
-    if (i > state.maxReached) {
-      alert("You cannot skip ahead. Please answer questions in order.");
+    // MODIFIED: Strictly forward-only - cannot go back to previous questions
+    if (i < state.current) {
+      alert("You cannot go back to previous questions. Please continue forward.");
+      return;
+    }
+    if (i > state.current + 1) {
+      alert("You cannot skip questions. Please answer the current question first.");
       return;
     }
     state.current = i; 
@@ -263,17 +264,15 @@ function runExam(examJson, totalTime) {
     if (state.current < state.questions.length - 1) {
       // Check if current question is answered
       if (state.answers[state.current] === null || state.answers[state.current] === undefined) {
-        if (!confirm("You haven't answered this question. Do you want to proceed anyway?")) {
+        if (!confirm("You haven't answered this question. Do you want to proceed anyway? You will NOT be able to return to this question.")) {
           return;
         }
       }
       
-      // Move to next question and update maxReached
+      // Move to next question - no going back!
       const nextIndex = state.current + 1;
-      if (nextIndex > state.maxReached) {
-        state.maxReached = nextIndex;
-      }
-      showQuestion(nextIndex);
+      state.current = nextIndex;
+      renderQuestion();
     }
   });
 
