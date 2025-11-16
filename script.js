@@ -76,14 +76,14 @@ function initIndexPage() {
     const email = ($("#email").value || "").trim();
     const file = $("#examSelect").value;
 
-    if (!name) { alert("المرجوا إدخال الاسم"); return; }
-    if (!university) { alert("المرجوا إدخال اسم الجامعة"); return; }
-    if (!email) { alert("المرجوا إدخال الإيميل"); return; }
+    if (!name) { alert("Please enter your name"); return; }
+    if (!university) { alert("Please enter your university"); return; }
+    if (!email) { alert("Please enter your email"); return; }
     // simple email check
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRe.test(email)) { if (!confirm("البريد الإلكتروني يبدو غير صحيح. المتابعة؟")) return; }
+    if (!emailRe.test(email)) { if (!confirm("Email looks invalid. Continue?")) return; }
 
-    if (!file) { alert("اختر الامتحان"); return; }
+    if (!file) { alert("Please choose an exam"); return; }
 
     sessionStorage.setItem("candidateName", name);
     sessionStorage.setItem("candidateUniversity", university);
@@ -105,20 +105,20 @@ function initIndexPage() {
 function initExamPage() {
   const candidateName = sessionStorage.getItem("candidateName") || "Anonymous";
   const examFile = sessionStorage.getItem("examFile");
-  if (!examFile) { alert("لم يتم اختيار امتحان"); window.location.href = "index.html"; return; }
+  if (!examFile) { alert("No exam selected"); window.location.href = "index.html"; return; }
   $("#candidateName").textContent = candidateName;
   const meta = EXAMS.find(x => x.file === examFile);
   if (meta) $("#examTitle").textContent = meta.title;
 
   fetch(examFile).then(r => {
-    if (!r.ok) throw new Error("فشل تحميل ملف الامتحان");
+    if (!r.ok) throw new Error("Failed to load exam file");
     return r.json();
   }).then(json => {
     const totalTime = Number(json.totalTime || (json.questions && json.questions.length === 15 ? 300 : 600));
     runExam(json, totalTime);
   }).catch(err => {
     console.error(err);
-    alert("خطأ في تحميل الامتحان. افتح console للمزيد.");
+    alert("Error loading exam. See console for details.");
   });
 }
 
@@ -214,7 +214,7 @@ function runExam(examJson, totalTime) {
 
   prevBtn.addEventListener("click", () => { if (state.current > 0) showQuestion(state.current - 1); });
   nextBtn.addEventListener("click", () => { if (state.current < state.questions.length - 1) showQuestion(state.current + 1); });
-  finishBtn.addEventListener("click", () => { if (confirm("هل أنت متأكد من إنهاء وتسليم الامتحان؟")) submitExam(false); });
+  finishBtn.addEventListener("click", () => { if (confirm("Are you sure you want to finish and submit the exam?")) submitExam(false); });
 
   // timer
   let timerInterval = null;
@@ -338,20 +338,20 @@ function initResultPage() {
   const summaryEl = $("#resultSummary");
   const detailedEl = $("#detailed");
   if (!raw) {
-    if (summaryEl) summaryEl.textContent = "لا توجد نتيجة محفوظة.";
+    if (summaryEl) summaryEl.textContent = "No saved result.";
     return;
   }
   const r = JSON.parse(raw);
   if (summaryEl) summaryEl.textContent = `${r.name} — ${r.examId}: ${r.score} / ${r.total} — ${r.time}s`;
   if (detailedEl) {
     detailedEl.innerHTML = `
-      <p>الاسم: <strong>${r.name}</strong></p>
-      <p>الجامعة: <strong>${r.university || "-"}</strong></p>
-      <p>البريد: <strong>${r.email || "-"}</strong></p>
-      <p>الامتحان: <strong>${r.examId}</strong></p>
-      <p>النتيجة: <strong>${r.score}</strong> من ${r.total}</p>
-      <p>الزمن: <strong>${r.time}</strong> ثانية</p>
-      <p>تم الإرسال: <strong>${new Date(r.date).toLocaleString()}</strong></p>
+      <p>Name: <strong>${r.name}</strong></p>
+      <p>University: <strong>${r.university || "-"}</strong></p>
+      <p>Email: <strong>${r.email || "-"}</strong></p>
+      <p>Exam: <strong>${r.examId}</strong></p>
+      <p>Score: <strong>${r.score}</strong> of ${r.total}</p>
+      <p>Time: <strong>${r.time}</strong> seconds</p>
+      <p>Submitted: <strong>${new Date(r.date).toLocaleString()}</strong></p>
     `;
   }
 }
@@ -381,7 +381,7 @@ function parseCSV(text) {
 async function initDashboardPage() {
   const rawRowsEl = $("#rawRows"), statsGrid = $("#statsGrid"), refreshBtn = $("#refreshBtn");
   if (!PUBLISHED_SHEET_CSV_URL) {
-    statsGrid.innerHTML = `<div class="card">لم تقم بتعيين PUBLISHED_SHEET_CSV_URL في script.js</div>`;
+    statsGrid.innerHTML = `<div class="card">You did not set PUBLISHED_SHEET_CSV_URL in script.js</div>`;
     return;
   }
 
@@ -401,7 +401,7 @@ async function initDashboardPage() {
       return data;
     } catch (err) {
       console.error(err);
-      alert("فشل تحميل CSV من الشيت المنشور. تأكد من نشر الشيت كـ CSV.");
+      alert("Failed to load CSV from published sheet. Ensure sheet is published as CSV.");
       return [];
     }
   }
