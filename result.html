@@ -9,12 +9,23 @@
 <body id="page-result">
   <main class="container">
     <div class="card result-card">
-      <h1>Exam Result</h1>
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h1>Exam Result</h1>
+        <!-- These placeholders are optional but make it clearer who this result belongs to.
+             script.js writes the full result into #detailed and #resultSummary, so these
+             are just visual helpers if you later want to populate them directly. -->
+        <div class="meta" style="text-align:right">
+          <div id="candidateNameHeader" style="font-weight:600"></div>
+          <div id="candidateUniversityHeader" style="font-size:13px;color:#6b7280"></div>
+          <div id="candidateEmailHeader" style="font-size:13px;color:#6b7280"></div>
+        </div>
+      </header>
+
       <p id="resultSummary">Loading...</p>
 
       <div id="detailed" class="detailed"></div>
 
-      <div class="actions">
+      <div class="actions" style="margin-top:18px">
         <a href="index.html" class="btn">Take another exam</a>
         <a href="dashboard.html" class="btn">View Dashboard</a>
       </div>
@@ -22,5 +33,22 @@
   </main>
 
   <script src="script.js"></script>
+  <script>
+    // Small enhancement: if script.js has lastResult in sessionStorage, fill the header placeholders too.
+    // This does not change the core logic in script.js but improves the UX on result page.
+    (function(){
+      try {
+        const raw = sessionStorage.getItem('lastResult');
+        if (!raw) return;
+        const r = JSON.parse(raw);
+        const nameEl = document.getElementById('candidateNameHeader');
+        const uniEl = document.getElementById('candidateUniversityHeader');
+        const emailEl = document.getElementById('candidateEmailHeader');
+        if (nameEl) nameEl.textContent = r.name || '';
+        if (uniEl) uniEl.textContent = r.university || '';
+        if (emailEl) emailEl.textContent = r.email || '';
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
 </body>
 </html>
