@@ -7,7 +7,7 @@
  * and on finish submits the result to a Google Form (via hidden form -> formResponse)
  * so responses appear in the linked Google Sheet.
  *
- * MODIFIED: Students CANNOT go back to previous questions (forward-only navigation)
+ * MODIFIED: Users CANNOT go back to previous questions - forward only navigation
  *
  * CONFIGURATION:
  * - Replace FORM_ACTION with your Google Form formResponse endpoint:
@@ -148,6 +148,7 @@ function runExam(examJson, totalTime) {
     questions,
     answers: Array(questions.length).fill(null),
     current: 0,
+    maxReached: 0, // Track the furthest question reached - CANNOT GO BACK beyond this
     totalTime,
     timeLeft: totalTime,
     timerRunning: false,
@@ -162,9 +163,9 @@ function runExam(examJson, totalTime) {
         progressGrid = $("#progressGrid"), prevBtn = $("#prevBtn"), nextBtn = $("#nextBtn"),
         finishBtn = $("#finishBtn"), timerEl = $("#timer");
 
-  // Hide or disable the previous button completely
+  // HIDE OR REMOVE THE PREVIOUS BUTTON (no going back allowed)
   if (prevBtn) {
-    prevBtn.style.display = "none"; // Completely hide the previous button
+    prevBtn.style.display = "none"; // Hide the previous button completely
   }
 
   // build progress grid
@@ -174,8 +175,14 @@ function runExam(examJson, totalTime) {
     d.className = "progress-item";
     d.textContent = i + 1;
     d.dataset.index = i;
-    // MODIFIED: Disable clicking on progress grid items completely - forward only navigation
-    d.style.cursor = "default";
+    // MODIFIED: Only allow clicking on questions up to maxReached (no jumping back)
+    d.addEventListener("click", () => {
+      if (i <= state.maxReached) {
+        showQuestion(i);
+      } else {
+        alert("You must answer questions in order. You cannot skip ahead.");
+      }
+    });
     progressGrid.appendChild(d);
   });
 
@@ -205,31 +212,22 @@ function runExam(examJson, totalTime) {
       optionsEl.appendChild(label);
     });
 
-    // MODIFIED: Previous button is always disabled (or hidden)
-    if (prevBtn) {
-      prevBtn.disabled = true;
-      prevBtn.style.display = "none";
-    }
-    
+    // Disable next button if at the end
     nextBtn.disabled = state.current >= state.questions.length - 1;
 
-    // Update progress grid styling
+    // Update progress grid display
     $all(".progress-item").forEach(el => {
       const i = Number(el.dataset.index);
       el.classList.toggle("answered", state.answers[i] !== null && state.answers[i] !== undefined);
-      el.classList.toggle("current", i === state.current);
+      el.classList.toggle("active", i === state.current);
       
-      // MODIFIED: Mark all previous questions as locked/disabled
-      if (i < state.current) {
-        el.style.opacity = "0.5";
-        el.style.cursor = "not-allowed";
-        el.classList.add("locked");
-      } else if (i === state.current) {
-        el.style.opacity = "1";
-        el.style.cursor = "default";
-      } else {
+      // Add visual indicator for questions that can't be accessed (beyond maxReached)
+      if (i > state.maxReached) {
         el.style.opacity = "0.4";
         el.style.cursor = "not-allowed";
+      } else {
+        el.style.opacity = "1";
+        el.style.cursor = "pointer";
       }
     });
 
@@ -237,19 +235,13 @@ function runExam(examJson, totalTime) {
   }
 
   function showQuestion(i) { 
-    // MODIFIED: Strictly forward-only - cannot go back to previous questions
-    if (i < state.current) {
-      alert("You cannot go back to previous questions. Please continue forward.");
-      return;
+    // Only allow showing questions up to maxReached
+    if (i <= state.maxReached) {
+      state.current = i; 
+      renderQuestion(); 
     }
-    if (i > state.current + 1) {
-      alert("You cannot skip questions. Please answer the current question first.");
-      return;
-    }
-    state.current = i; 
-    renderQuestion(); 
   }
-
+  
   function saveAnswer(idx) { 
     state.answers[state.current] = idx; 
     const el = document.querySelector(`.progress-item[data-index="${state.current}"]`); 
@@ -257,46 +249,50 @@ function runExam(examJson, totalTime) {
     persist(); 
   }
 
-  // MODIFIED: Remove previous button functionality entirely
-  // prevBtn event listener removed
+  // REMOVED: Previous button functionality (no going back)
+  // prevBtn is hidden, so no event listener needed
 
   nextBtn.addEventListener("click", () => { 
     if (state.current < state.questions.length - 1) {
-      // Check if current question is answered
-      if (state.answers[state.current] === null || state.answers[state.current] === undefined) {
-        if (!confirm("You haven't answered this question. Do you want to proceed anyway? You will NOT be able to return to this question.")) {
-          return;
-        }
+      // Move to next question
+      const nextIndex = state.current + 1;
+      
+      // Update maxReached if moving forward
+      if (nextIndex > state.maxReached) {
+        state.maxReached = nextIndex;
       }
       
-      // Move to next question - no going back!
-      const nextIndex = state.current + 1;
-      state.current = nextIndex;
-      renderQuestion();
+      showQuestion(nextIndex);
     }
   });
-
+  
   finishBtn.addEventListener("click", () => { 
+    // Check if all questions have been answered
     const unanswered = state.answers.filter(a => a === null || a === undefined).length;
-    let confirmMsg = "Are you sure you want to finish and submit the exam?";
+    
     if (unanswered > 0) {
-      confirmMsg = `You have ${unanswered} unanswered question(s). Are you sure you want to submit?`;
+      if (!confirm(`You have ${unanswered} unanswered question(s). Are you sure you want to finish and submit the exam?`)) {
+        return;
+      }
+    } else {
+      if (!confirm("Are you sure you want to finish and submit the exam?")) {
+        return;
+      }
     }
-    if (confirm(confirmMsg)) {
-      submitExam(false); 
-    }
+    
+    submitExam(false); 
   });
 
   // timer
   let timerInterval = null;
   function updateTimerUI() { 
     timerEl.textContent = formatTime(state.timeLeft); 
-    // Add warning class when time is running low (last 5 minutes)
+    // Add warning class when time is running low (less than 5 minutes)
     if (state.timeLeft <= 300) {
       timerEl.classList.add("warning");
     }
   }
-
+  
   function startTimer() {
     if (timerInterval) return;
     updateTimerUI();
@@ -349,9 +345,6 @@ function runExam(examJson, totalTime) {
     // Submit to Google Form (hidden form)
     submitToGoogleForm(result);
 
-    // Clear exam state to prevent resuming
-    sessionStorage.removeItem("examState");
-
     // Redirect to result page after short delay to allow form post
     setTimeout(() => { window.location.href = "result.html"; }, 700);
   }
@@ -362,13 +355,6 @@ function runExam(examJson, totalTime) {
     state.startedAt = Date.now();
   }
   startTimer();
-
-  // MODIFIED: Prevent browser back button during exam
-  history.pushState(null, null, location.href);
-  window.onpopstate = function () {
-    history.go(1);
-    alert("You cannot go back during the exam. Please use the Next button to continue.");
-  };
 }
 
 /* ================== Google Form submit helper ================== */
@@ -441,7 +427,7 @@ function initResultPage() {
       <p>Score: <strong>${r.score}</strong> of ${r.total}</p>
       <p>Time: <strong>${r.time}</strong> seconds</p>
       <p>Submitted: <strong>${new Date(r.date).toLocaleString()}</strong></p>
-      ${r.timeExpired ? '<p style="color: #ef4444;"><strong>⚠ Time expired - exam auto-submitted</strong></p>' : ''}
+      ${r.timeExpired ? '<p style="color: #ef4444;"><strong>⚠️ Time expired - exam was auto-submitted</strong></p>' : ''}
     `;
   }
 }
