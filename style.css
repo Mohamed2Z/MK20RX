@@ -1,0 +1,65 @@
+/* Basic responsive styles for the exam platform */
+:root{
+  --bg:#f6f8fb;
+  --card:#fff;
+  --accent:#1e6fff;
+  --muted:#6b7280;
+  --max-width:1024px;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  background:linear-gradient(180deg,#f6f8fb 0%, #ffffff 100%);
+  color:#111827;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.container{
+  max-width:var(--max-width);
+  margin:28px auto;
+  padding:20px;
+}
+h1,h2,h3{margin:0 0 12px 0}
+p{margin:0 0 12px 0;color:var(--muted)}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:0 6px 18px rgba(16,24,40,0.06);
+}
+.topbar{background:transparent;padding:12px 0;margin-bottom:12px}
+.topbar .container{display:flex;justify-content:space-between;align-items:center}
+.meta{display:flex;gap:12px;align-items:center;color:var(--muted)}
+.btn{
+  display:inline-block;padding:8px 12px;border-radius:8px;border:1px solid #e6eefc;
+  background:white;color:#1f2937;text-decoration:none;cursor:pointer;margin-right:8px;
+}
+.btn.primary{background:var(--accent);color:white;border:none}
+.small{font-size:13px;color:var(--muted);margin-top:18px}
+form label{display:block;margin:8px 0 6px;font-weight:600}
+input[type="text"],select{
+  width:100%;padding:10px;border-radius:8px;border:1px solid #e6eefc;background:white;
+}
+.exam-area{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+.question-text{font-size:18px;margin:12px 0}
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.option{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;border:1px solid #eef2ff;cursor:pointer}
+.option input{transform:scale(1.1)}
+.nav-controls{display:flex;gap:8px;justify-content:flex-end}
+.sidecard h3{margin-top:0}
+.progress-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+.progress-item{padding:8px;border-radius:6px;background:#f3f4f6;text-align:center}
+.progress-item.answered{background:#ecfeff}
+.q-index{font-size:14px;color:var(--muted)}
+.detailed{margin-top:12px}
+.result-card{text-align:center}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+.stat{padding:12px;border-radius:8px;background:#fff;border:1px solid #f1f5f9}
+.raw{max-height:300px;overflow:auto;background:#0b1220;color:#e6eefc;padding:12px;border-radius:8px}
+@media(max-width:900px){
+  .exam-area{grid-template-columns:1fr; }
+  .progress-grid{grid-template-columns:repeat(4,1fr)}
+  .topbar .container{flex-direction:column;align-items:flex-start;gap:10px}
+}

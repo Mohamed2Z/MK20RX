@@ -1,0 +1,22 @@
+{
+  "examId": "exam8",
+  "examTitle": "Exam 8 - Short (15 Questions)",
+  "totalTime": 300,
+  "questions": [
+    { "id": 1, "q": "Which of these is primarily confidentiality control?", "options": ["Encryption","Backups","Monitoring","Load balancing"], "correct": 0 },
+    { "id": 2, "q": "Which attack floods servers with traffic from many sources?", "options": ["DDoS","Brute force","SQLi","XSS"], "correct": 0 },
+    { "id": 3, "q": "What does 'separation of duties' prevent?", "options": ["Single person performing critical actions alone","Network outages","Phishing","Malware"], "correct": 0 },
+    { "id": 4, "q": "What is a common technique used by ransomware?", "options": ["Encrypt files and demand payment","Scan open ports only","Send phishing to admin","Modify DNS records"], "correct": 0 },
+    { "id": 5, "q": "An attacker hides in kernel mode to avoid detection. This is:", "options": ["Rootkit","Keylogger","Adware","Worm"], "correct": 0 },
+    { "id": 6, "q": "Which is used to remediate vulnerabilities proactively?", "options": ["Patch management","SIEM only","Closing logs","Monitoring disabled"], "correct": 0 },
+    { "id": 7, "q": "Which of these is a best practice for backups?", "options": ["Encrypt & test restores","Store only locally","Never test","Disable retention"], "correct": 0 },
+    { "id": 8, "q": "An app allows file uploads without validation. This enables:", "options": ["Remote code execution / malware upload","Only jpg uploads","Faster performance","Less security"], "correct": 0 },
+    { "id": 9, "q": "Which is the main benefit of user behavior analytics?", "options": ["Detect anomalies","Improve speed","Encrypt disks","Block malware automatically"], "correct": 0 },
+    { "id": 10, "q": "Which is a common sign of a data breach in logs?", "options": ["Unexpected large outbound transfers","Normal backups","Updates applied","No traffic"], "correct": 0 },
+    { "id": 11, "q": "What is a recommended way to handle third-party updates?", "options": ["Verify signatures & integrity","Trust blindly","Auto-run without checks","Disable monitoring"], "correct": 0 },
+    { "id": 12, "q": "Which mechanism prevents clickjacking attacks?", "options": ["X-Frame-Options header","Disabling JavaScript","Turning off cookies","Removing SSL"], "correct": 0 },
+    { "id": 13, "q": "Which practice limits blast radius of compromised accounts?", "options": ["Role-based access control (RBAC)","Share admin creds","Use one admin account for all","No logging"], "correct": 0 },
+    { "id": 14, "q": "Which attack involves impersonating a WiFi hotspot?", "options": ["Evil Twin","SQL injection","XSS","DDoS"], "correct": 0 },
+    { "id": 15, "q": "What does 'phishing' rely on?", "options": ["Social engineering","Encryption","Patching","Network segmentation"], "correct": 0 }
+  ]
+}

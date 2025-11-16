@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Exam - Cybersecurity</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body id="page-exam">
+  <header class="topbar">
+    <div class="container">
+      <h2 id="examTitle">Exam</h2>
+      <div class="meta">
+        <span id="candidateName"></span>
+        <span id="timer">00:00</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container exam-area">
+    <div id="questionCard" class="card">
+      <div id="qIndex" class="q-index">Question 1 / 15</div>
+      <div id="questionText" class="question-text">Loading...</div>
+
+      <div id="options" class="options"></div>
+
+      <div class="nav-controls">
+        <button id="prevBtn" class="btn" disabled>Previous</button>
+        <button id="nextBtn" class="btn">Next</button>
+        <button id="finishBtn" class="btn primary">Finish & Submit</button>
+      </div>
+    </div>
+
+    <aside class="card sidecard">
+      <h3>Progress</h3>
+      <div id="progressGrid" class="progress-grid"></div>
+
+      <h4>Instructions</h4>
+      <ul>
+        <li>One question at a time. Your answers auto-save as you click.</li>
+        <li>The timer is global for the whole exam. If time ends, the exam will be submitted automatically.</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

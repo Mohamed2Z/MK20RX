@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Exam Statistics</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body id="page-dashboard">
+  <main class="container">
+    <h1>Exam Dashboard</h1>
+    <p>Aggregated results from Google Sheets.</p>
+
+    <div id="statsGrid" class="stats-grid"></div>
+
+    <div class="actions">
+      <a href="index.html" class="btn">Back to Start</a>
+      <button id="refreshBtn" class="btn">Refresh</button>
+    </div>
+
+    <div class="card">
+      <h3>Raw results (recent)</h3>
+      <pre id="rawRows" class="raw"></pre>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "examId": "exam7",
+  "examTitle": "Exam 7 - Short (15 Questions)",
+  "totalTime": 300,
+  "questions": [
+    { "id": 1, "q": "Which attack aims to steal credentials via email?", "options": ["Phishing","DDoS","Brute force","Ransomware"], "correct": 0 },
+    { "id": 2, "q": "Which of these helps detect intrusions by logs?", "options": ["SIEM","MFA","RAID","VPN"], "correct": 0 },
+    { "id": 3, "q": "Which is used to show current directory in Linux?", "options": ["ls","pwd","cd","dir"], "correct": 1 },
+    { "id": 4, "q": "Which is a common technique to evade detection in C2?", "options": ["C2 over HTTPS","Using cleartext HTTP","No network traffic","Local only"], "correct": 0 },
+    { "id": 5, "q": "An attacker steals a session cookie via XSS. This is an example of:", "options": ["XSS","CSRF","SQLi","SSRF"], "correct": 0 },
+    { "id": 6, "q": "Which is a good practice when storing passwords?", "options": ["Plaintext","Hashed & salted","Reversible encryption","Share in email"], "correct": 1 },
+    { "id": 7, "q": "What does 'sandboxing' provide?", "options": ["Isolated execution environment","Permanent modification","Network-wide access","Faster CPU"], "correct": 0 },
+    { "id": 8, "q": "Which is an example of 'baiting' social engineering?", "options": ["Free USB left in lobby","Spear phishing email","Tailgating into building","Phone call to helpdesk"], "correct": 0 },
+    { "id": 9, "q": "Which tool would you use to test web application security interactively?", "options": ["Wireshark","Nmap","Burp Suite","tcpdump"], "correct": 2 },
+    { "id": 10, "q": "What is 'defense in depth'?", "options": ["Single strong control","Multiple overlapping controls","Only network controls","Only user training"], "correct": 1 },
+    { "id": 11, "q": "A user clicking a malicious link that downloads malware is an example of:", "options": ["Phishing","DDoS","ARP spoofing","Key exchange"], "correct": 0 },
+    { "id": 12, "q": "Which of these is used to protect web forms from CSRF?", "options": ["CSRF token","MD5 hash of page","No cookie","Referrer removal"], "correct": 0 },
+    { "id": 13, "q": "Which is the valid reason for performing a risk assessment?", "options": ["Prioritize controls","Avoid backups","Remove all policies","Stop logging"], "correct": 0 },
+    { "id": 14, "q": "What does a bootkit modify to persist at system start?", "options": ["Bootloader","User profile","Log files","Printer drivers"], "correct": 0 },
+    { "id": 15, "q": "Which behavior suggests privilege escalation?", "options": ["Low-level user gains admin rights via exploit","User logs in then logs out","Normal file access","Routine backup"], "correct": 0 }
+  ]
+}

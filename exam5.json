@@ -1,0 +1,22 @@
+{
+  "examId": "exam5",
+  "examTitle": "Exam 5 - Short (15 Questions)",
+  "totalTime": 300,
+  "questions": [
+    { "id": 1, "q": "What does CIA stand for in cybersecurity?", "options": ["Confidentiality, Integrity, Availability","Encryption, Authentication, Authorization","Control, Integration, Access","Privacy, Security, Compliance"], "correct": 0 },
+    { "id": 2, "q": "Which protocol is used to translate domain names to IP addresses?", "options": ["FTP","DNS","SMTP","SSH"], "correct": 1 },
+    { "id": 3, "q": "What is the default port for HTTPS?", "options": ["21","53","80","443"], "correct": 3 },
+    { "id": 4, "q": "Which attack involves sending fake ARP messages?", "options": ["DNS Poisoning","ARP Spoofing","SQL Injection","Man-in-the-Middle"], "correct": 1 },
+    { "id": 5, "q": "Which protocol makes communication secure using encryption?", "options": ["HTTP","HTTPS","Telnet","FTP"], "correct": 1 },
+    { "id": 6, "q": "What does DHCP assign?", "options": ["MAC Addresses","IP Addresses","Domain Names","Routes"], "correct": 1 },
+    { "id": 7, "q": "Which tool is used for network scanning?", "options": ["Wireshark","Nmap","Burp Suite","Metasploit"], "correct": 1 },
+    { "id": 8, "q": "SYN Flood attack targets which protocol?", "options": ["UDP","ARP","TCP","DNS"], "correct": 2 },
+    { "id": 9, "q": "An email asking for credentials via link is an example of:", "options": ["Whaling","Phishing","Vishing","Watering hole"], "correct": 1 },
+    { "id": 10, "q": "Which principle means give only necessary access?", "options": ["Least Privilege","Zero Trust","Defense in Depth","Separation of Duties"], "correct": 0 },
+    { "id": 11, "q": "A web login that accepts ' OR '1'='1 demonstrates:", "options": ["CSRF","SQL Injection","XSS","LFI"], "correct": 1 },
+    { "id": 12, "q": "Which header prevents JS from reading a cookie?", "options": ["HttpOnly","Secure","SameSite","Domain"], "correct": 0 },
+    { "id": 13, "q": "Which attack floods a server with millions of packets from various IPs?", "options": ["Brute force","MITM","DDoS","DNS Spoofing"], "correct": 2 },
+    { "id": 14, "q": "Which is a symmetric encryption algorithm?", "options": ["RSA","AES","ECC","Diffie-Hellman"], "correct": 1 },
+    { "id": 15, "q": "A USB found in a parking lot that auto-installs malware is:", "options": ["Trojan","Social engineering","USB Drop Attack","Phishing"], "correct": 2 }
+  ]
+}

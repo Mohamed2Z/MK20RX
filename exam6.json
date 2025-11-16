@@ -1,0 +1,22 @@
+{
+  "examId": "exam6",
+  "examTitle": "Exam 6 - Short (15 Questions)",
+  "totalTime": 300,
+  "questions": [
+    { "id": 1, "q": "What does 'least privilege' protect against primarily?", "options": ["Insider threats","Network outages","Malware only","Default passwords"], "correct": 0 },
+    { "id": 2, "q": "Which command lists running processes in Linux?", "options": ["ls","ps","mkdir","kill"], "correct": 1 },
+    { "id": 3, "q": "Which algorithm is used for hashing (example)?", "options": ["AES","SHA-256","RSA","Diffie-Hellman"], "correct": 1 },
+    { "id": 4, "q": "A rootkit is designed to:", "options": ["Speed up OS","Hide malicious activity","Remove logs only","Encrypt files"], "correct": 1 },
+    { "id": 5, "q": "What does 'SSRF' stand for?", "options": ["Server Side Request Forgery","Secure Server Remote Function","Server Redirect Function","Secure Site Request File"], "correct": 0 },
+    { "id": 6, "q": "Workstations that suddenly show black screens and can't access BIOS indicate:", "options": ["Ransomware","Bootkit","Worm","Keylogger"], "correct": 1 },
+    { "id": 7, "q": "What is a Honeypot used for?", "options": ["Store production data","Attract attackers","Encrypt files","Monitor employees"], "correct": 1 },
+    { "id": 8, "q": "Which is NOT a hashing algorithm?", "options": ["MD5","SHA-1","RC4","SHA-256"], "correct": 2 },
+    { "id": 9, "q": "A single account running thousands of read queries at odd hours suggests:", "options": ["Insider threat","Backup process","Adware","Normal ops"], "correct": 0 },
+    { "id": 10, "q": "What should be done first when detecting suspicious admin changes?", "options": ["Ignore","Investigate and isolate","Reboot systems","Delete accounts"], "correct": 1 },
+    { "id": 11, "q": "Which is an example of social engineering via physical media?", "options": ["Baiting","Phishing","Vishing","Tailgating"], "correct": 0 },
+    { "id": 12, "q": "What is MFA?", "options": ["Multiple firewall appliances","Multi-factor authentication","More frequent audits","Memory fragment analysis"], "correct": 1 },
+    { "id": 13, "q": "Which measure helps if a user writes password on sticky note?", "options": ["Administrative controls","Technical controls only","No controls","Delete workstation"], "correct": 0 },
+    { "id": 14, "q": "A console shows hidden PowerShell running web requests. This suggests:", "options": ["Fileless malware","Normal update","Disk error","Authorized admin job"], "correct": 0 },
+    { "id": 15, "q": "Which header should you set to protect cookies over HTTPS?", "options": ["Secure","X-Frame-Options","Content-Type","ETag"], "correct": 0 }
+  ]
+}
