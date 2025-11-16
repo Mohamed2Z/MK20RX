@@ -9,11 +9,17 @@
 <body id="page-index">
   <main class="container">
     <h1>Cybersecurity Exam Portal</h1>
-    <p>Enter your name and choose an exam to begin. Exams are timed — make sure you are ready.</p>
+    <p>Enter your name, university and email, then choose an exam to begin. Exams are timed — make sure you are ready.</p>
 
     <form id="startForm">
       <label for="name">Your full name</label>
       <input id="name" name="name" type="text" placeholder="Jane Doe" required />
+
+      <label for="university">University</label>
+      <input id="university" name="university" type="text" placeholder="University name" required />
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required />
 
       <label for="examSelect">Choose exam</label>
       <select id="examSelect" required>
@@ -27,7 +33,7 @@
     </form>
 
     <footer class="small">
-      <p>This is a static demo designed for GitHub Pages + Google Apps Script for results collection.</p>
+      <p>This is a static demo designed for GitHub Pages. Results can be submitted to a Google Form or your server depending on configuration in script.js.</p>
     </footer>
   </main>
 
